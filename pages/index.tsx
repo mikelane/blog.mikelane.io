@@ -1,169 +1,202 @@
-import * as React from 'react'
-import { API, graphqlOperation } from 'aws-amplify'
-import nanoid from 'nanoid'
-import produce from 'immer'
+import Head from 'next/head';
 
-import { ListTodosQuery, GetTodoListQuery } from '../src/API'
-import config from '../src/aws-exports'
-import {
-  createTodo,
-  deleteTodo,
-  createTodoList,
-} from '../src/graphql/mutations'
-import { getTodoList } from '../src/graphql/queries'
+const Home = () => (
+    <div className="container">
+        <Head>
+            <title>Mike Lane&apos;s Blog</title>
+            <link rel="icon" href="/favicon.ico" />
+        </Head>
 
-const MY_ID = nanoid()
-API.configure(config)
+        <main>
+            <h1 className="title">
+                Welcome to <a href="https://nextjs.org">Next.js!</a>
+            </h1>
 
-type Todo = Omit<
-  ListTodosQuery['listTodos']['items'][0],
-  '__typename' | 'todoList'
->
+            <p className="description">
+                Get started by editing <code>pages/index.js</code>
+            </p>
 
-type Props = {
-  todos: Todo[]
-}
+            <div className="grid">
+                <a href="https://nextjs.org/docs" className="card">
+                    <h3>Documentation &rarr;</h3>
+                    <p>Find in-depth information about Next.js features and API.</p>
+                </a>
 
-type State = {
-  todos: Todo[]
-  currentName: string
-}
+                <a href="https://nextjs.org/learn" className="card">
+                    <h3>Learn &rarr;</h3>
+                    <p>Learn about Next.js in an interactive course with quizzes!</p>
+                </a>
 
-type Action =
-  | {
-      type: 'add-todo'
-      payload: Todo
-    }
-  | {
-      type: 'delete-todo'
-      payload: string
-    }
-  | {
-      type: 'reset-current'
-    }
-  | { type: 'set-current'; payload: string }
+                <a href="https://github.com/zeit/next.js/tree/master/examples" className="card">
+                    <h3>Examples &rarr;</h3>
+                    <p>Discover and deploy boilerplate example Next.js projects.</p>
+                </a>
 
-const reducer: React.Reducer<State, Action> = (state, action) => {
-  switch (action.type) {
-    case 'add-todo': {
-      return produce(state, draft => {
-        draft.todos.push(action.payload)
-      })
-    }
-    case 'delete-todo': {
-      const index = state.todos.findIndex(({ id }) => action.payload === id)
-      if (index === -1) return state
-      return produce(state, draft => {
-        draft.todos.splice(index, 1)
-      })
-    }
-    case 'reset-current': {
-      return produce(state, draft => {
-        draft.currentName = ''
-      })
-    }
-    case 'set-current': {
-      return produce(state, draft => {
-        draft.currentName = action.payload
-      })
-    }
-    default: {
-      return state
-    }
-  }
-}
+                <a
+                    href="https://zeit.co/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+                    className="card"
+                >
+                    <h3>Deploy &rarr;</h3>
+                    <p>Instantly deploy your Next.js site to a public URL with ZEIT Now.</p>
+                </a>
+            </div>
+        </main>
 
-const createToDo = async (dispatch: React.Dispatch<Action>, currentToDo) => {
-  const todo = {
-    id: nanoid(),
-    name: currentToDo,
-    createdAt: `${Date.now()}`,
-    completed: false,
-    todoTodoListId: 'global',
-    userId: MY_ID,
-  }
-  dispatch({ type: 'add-todo', payload: todo })
-  dispatch({ type: 'reset-current' })
-  try {
-    await API.graphql(graphqlOperation(createTodo, { input: todo }))
-  } catch (err) {
-    dispatch({ type: 'set-current', payload: todo.name })
-    console.warn('Error adding to do ', err)
-  }
-}
-const deleteToDo = async (dispatch: React.Dispatch<Action>, id: string) => {
-  dispatch({ type: 'delete-todo', payload: id })
-  try {
-    await API.graphql({
-      ...graphqlOperation(deleteTodo),
-      variables: { input: { id } },
-    })
-  } catch (err) {
-    console.warn('Error deleting to do ', err)
-  }
-}
-const App = (props: Props) => {
-  const [state, dispatch] = React.useReducer(reducer, {
-    todos: props.todos,
-    currentName: '',
-  })
-  return (
-    <div>
-      <h3>Add a Todo</h3>
-      <form
-        onSubmit={ev => {
-          ev.preventDefault()
-          createToDo(dispatch, state.currentName)
-        }}
-      >
-        <input
-          value={state.currentName}
-          onChange={e => {
-            dispatch({ type: 'set-current', payload: e.target.value })
-          }}
-        />
-        <button type="submit">Create Todo</button>
-      </form>
-      <h3>Todos List</h3>
-      {state.todos.map((todo, index) => (
-        <p key={index}>
-          <a href={`/todo/${todo.id}`}>{todo.name}</a>
-          <button
-            onClick={() => {
-              deleteToDo(dispatch, todo.id)
-            }}
-          >
-            delete
-          </button>
-        </p>
-      ))}
+        <footer>
+            <a
+                href="https://zeit.co?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Powered by <img src="/zeit.svg" alt="ZEIT Logo" />
+            </a>
+        </footer>
+
+        <style jsx>
+            {`
+        .container {
+          min-height: 100vh;
+          padding: 0 0.5rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+
+        main {
+          padding: 5rem 0;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+
+        footer {
+          width: 100%;
+          height: 100px;
+          border-top: 1px solid #eaeaea;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        footer img {
+          margin-left: 0.5rem;
+        }
+
+        footer a {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        a {
+          color: inherit;
+          text-decoration: none;
+        }
+
+        .title a {
+          color: #0070f3;
+          text-decoration: none;
+        }
+
+        .title a:hover,
+        .title a:focus,
+        .title a:active {
+          text-decoration: underline;
+        }
+
+        .title {
+          margin: 0;
+          line-height: 1.15;
+          font-size: 4rem;
+        }
+
+        .title,
+        .description {
+          text-align: center;
+        }
+
+        .description {
+          line-height: 1.5;
+          font-size: 1.5rem;
+        }
+
+        code {
+          background: #fafafa;
+          border-radius: 5px;
+          padding: 0.75rem;
+          font-size: 1.1rem;
+          font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+            Bitstream Vera Sans Mono, Courier New, monospace;
+        }
+
+        .grid {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-wrap: wrap;
+
+          max-width: 800px;
+          margin-top: 3rem;
+        }
+
+        .card {
+          margin: 1rem;
+          flex-basis: 45%;
+          padding: 1.5rem;
+          text-align: left;
+          color: inherit;
+          text-decoration: none;
+          border: 1px solid #eaeaea;
+          border-radius: 10px;
+          transition: color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .card:hover,
+        .card:focus,
+        .card:active {
+          color: #0070f3;
+          border-color: #0070f3;
+        }
+
+        .card h3 {
+          margin: 0 0 1rem 0;
+          font-size: 1.5rem;
+        }
+
+        .card p {
+          margin: 0;
+          font-size: 1.25rem;
+          line-height: 1.5;
+        }
+
+        @media (max-width: 600px) {
+          .grid {
+            width: 100%;
+            flex-direction: column;
+          }
+        }
+      `}
+        </style>
+
+        <style jsx global>
+            {`
+        html,
+        body {
+          padding: 0;
+          margin: 0;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+            Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+      `}
+        </style>
     </div>
-  )
-}
-App.getInitialProps = async () => {
-  let result: { data: GetTodoListQuery; errors: {}[] } = await API.graphql(
-    graphqlOperation(getTodoList, { id: 'global' })
-  )
-  if (result.errors) {
-    console.log('Failed to fetch todolist. ', result.errors)
-    return { todos: [] }
-  }
-  if (result.data.getTodoList !== null) {
-    return { todos: result.data.getTodoList.todos.items }
-  }
+);
 
-  try {
-    await API.graphql(
-      graphqlOperation(createTodoList, {
-        input: {
-          id: 'global',
-          createdAt: `${Date.now()}`,
-        },
-      })
-    )
-  } catch (err) {
-    console.warn(err)
-  }
-  return { todos: [] }
-}
-export default App
+export default Home;
