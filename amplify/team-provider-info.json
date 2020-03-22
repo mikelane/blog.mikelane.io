@@ -1,0 +1,15 @@
+{
+    "master": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-blogmikelaneio-master-170059-authRole",
+            "UnauthRoleArn": "arn:aws:iam::307842253484:role/amplify-blogmikelaneio-master-170059-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::307842253484:role/amplify-blogmikelaneio-master-170059-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "amplify-blogmikelaneio-master-170059-deployment",
+            "UnauthRoleName": "amplify-blogmikelaneio-master-170059-unauthRole",
+            "StackName": "amplify-blogmikelaneio-master-170059",
+            "StackId": "arn:aws:cloudformation:us-west-2:307842253484:stack/amplify-blogmikelaneio-master-170059/3acfadc0-6bd0-11ea-b437-0a3d9b1fa9c6",
+            "AmplifyAppId": "d4i5cc8jz59hx"
+        }
+    }
+}
