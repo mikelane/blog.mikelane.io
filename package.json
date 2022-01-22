@@ -17,7 +17,7 @@
   "dependencies": {
     "aws-amplify": "^2.2.6",
     "immer": "^6.0.2",
-    "nanoid": "^2.1.11",
+    "nanoid": "^3.1.31",
     "next": "^9.3.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
